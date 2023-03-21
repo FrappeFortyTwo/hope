@@ -73,38 +73,80 @@ pacman -Syy
 
 install () {
 
-
-
 apps=(
 
-        # Base System :
+# Base System :
 
-    l   'linux'             # The Linux kernel and modules
-        'linux-firmware'    # Firmware files for Linux
+    l   'linux'                 # The Linux kernel and modules
+        'linux-firmware'        # Firmware files for Linux
 
-        'base'              # Minimal package set to define a basic Arch Linux installation
-        'base-devel'        # Basic tools to build Arch Linux packages
+        'base'                  # Minimal package set to define a basic Arch Linux installation
+        'base-devel'            # Basic tools to build Arch Linux packages
 
-        # Locale :
+# Terminal :
 
-        'noto-fonts'        # Google Noto TTF fonts
-        'font-manager'      # Font management for GTK+ DEs
+        'fish'                  # smart and user-friendly command line shell
+        'fisher'                # package manager for the fish shell
 
-        # User Dirs
-        'xdg-user-dirs'     # Manage user dirs like ~/Desktop, ~/Music, etc
+        'tldr'                  # collection of simplified and community-driven man pages.
+        'man-db'                # utility for reading man pages
 
-        'networkmanager'    # Network connection manager
-        'ufw'               # CLI tool for managing a netfilter firewall
+        'exa'                   # ls replacement
+        'bat'                   # cat clone with syntax highlighting and git integration
 
-        'blueman'           # GTK+ Bluetooth Manager
-        'bluez'             # Daemons for the bluetooth protocol stack
-        'bluez-utils'       # Development and debugging utils for the bluetooth protocol stack
+# Personal Development Environment :
 
-        'pulseaudio'        # A featureful, general-purpose sound server
-        'pulseaudio-alsa'   # ALSA Configuration for PulseAudio
-        'pulseaudio-bluetooth' # Bluetooth support for PulseAudio
-         'pavucontrol'      # PulseAudio Volume Control
+        'neovim'                # hyperextensible Vim-based text editor
+        'git'                   # distributed version control system
 
+        'fd'                    # fast and user-friendly alternative to find
+        'ripgrep'               # search tool that combines the usability of ag with the raw speed of grep
+
+        'nodejs'                # Evented I/O for V8 javascript
+        'npm'                   # package manager for javascript
+
+# Essentials :
+
+        'noto-fonts'            # Google Noto TTF fonts
+        'xdg-user-dirs'         # Manage user dirs like ~/Desktop, ~/Music, etc
+
+# Settings :
+
+        'font-manager'          # Font management for GTK+ DEs
+        'ufw'                   # CLI tool for managing a netfilter firewall
+
+# Hardware :
+
+        'networkmanager'        # Network connection manager
+
+        'blueman'               # GTK+ Bluetooth Manager
+        'bluez'                 # Daemons for the bluetooth protocol stack
+        'bluez-utils'           # Development and debugging utils for the bluetooth protocol stack
+
+        'pulseaudio'            # A featureful, general-purpose sound server
+        'pulseaudio-alsa'       # ALSA Configuration for PulseAudio
+        'pulseaudio-bluetooth'  # Bluetooth support for PulseAudio
+        'pavucontrol'           # PulseAudio Volume Control
+
+        'xorg-server'           # xorg display server.
+        'xorg-init'             # xorg initialisation program
+        'xorg-xclipboard'       # x clipboard manager
+
+
+        
+# Tools :
+
+        'btop'                  # monitor of system resources
+        'gdu'                   # Fast disk usage analyzer
+        'bandwhich'             # bandwidth utilization tool
+
+# Settings :
+
+
+# Apps :
+
+        'cmus'                  # Feature-rich ncurses-based music player
+        'calc'                  # Arbitrary precision console calculator
 		
 		
 		

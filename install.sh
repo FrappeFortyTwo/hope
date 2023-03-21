@@ -1,6 +1,8 @@
 #!/bin/bash
 # This script installs the base arch system.
 
+# VERIFY BOOT MODE
+
 check_uefi () {
 
 # check if system is booted in UEFI mode.
@@ -13,14 +15,16 @@ fi
 
 }
 
-sync_packages () {
+# CONNECT TO INTERNET
 
-# update mirror list & refresh packages.
-reflector --country India --protocol https --save /etc/pacman.d/mirrorlist
+# Use iwctl to connect to a wifi, incase you're not on a wired connection.
+# `iwctl --passphrase passphrase station device connect SSID`
+# ex : iwctl --passphrase D@mnITTrudy station wlan0 connect ThePineappleIncident
+# check internet connectio using 'ping google.com', response means internis working.
 
-pacman -Syy
-
-}
+# PARTITION THE DISKS
+# to identify the disks, use `lsblk`
+# - [ ] Add Swap option based on RAM
 
 prepare_disk () {
 
@@ -55,10 +59,74 @@ mount /dev/nvme0n1p2 /mnt
 
 }
 
+# UPDATE MIRROR LIST, THIS IS COPIED TO THE NEW SYSTEM
+
+sync_packages () {
+
+# update mirror list & refresh packages.
+reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+pacman -Syy
+
+}
+
+# INSTALL ESSENTIAL PACKAGES
+
 install () {
 
-# install essential packages.
-pacstrap /mnt linux linux-firmware base base-devel
+
+
+apps=(
+
+        # Base System :
+
+    l   'linux'             # The Linux kernel and modules
+        'linux-firmware'    # Firmware files for Linux
+
+        'base'              # Minimal package set to define a basic Arch Linux installation
+        'base-devel'        # Basic tools to build Arch Linux packages
+
+        # Locale :
+
+        'noto-fonts'        # Google Noto TTF fonts
+        'font-manager'      # Font management for GTK+ DEs
+
+        # User Dirs
+        'xdg-user-dirs'     # Manage user dirs like ~/Desktop, ~/Music, etc
+
+        'networkmanager'    # Network connection manager
+        'ufw'               # CLI tool for managing a netfilter firewall
+
+        'blueman'           # GTK+ Bluetooth Manager
+        'bluez'             # Daemons for the bluetooth protocol stack
+        'bluez-utils'       # Development and debugging utils for the bluetooth protocol stack
+
+        'pulseaudio'        # A featureful, general-purpose sound server
+        'pulseaudio-alsa'   # ALSA Configuration for PulseAudio
+        'pulseaudio-bluetooth' # Bluetooth support for PulseAudio
+         'pavucontrol'      # PulseAudio Volume Control
+
+		
+		
+		
+		
+		
+
+		
+
+		
+
+	)
+
+	for app in "${apps[@]}"; do
+        pacstrap -K /mnt "$app"
+	done
+
+
+
+
+
+
+
 
 # generate fstab file.
 genfstab -U /mnt >> /mnt/etc/fstab

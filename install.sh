@@ -74,18 +74,16 @@ apps=(
         'noto-fonts'            # typeface to write/read any language.
         'xdg-user-dirs'         # manages default directories for users.
 
-# Terminal : packages for a seamless shell experience.
+# packages for a seamless shell exprience.
 
-        'fish'                  # smart and user-friendly command line shell
-        'fisher'                # package manager for the fish shell
+        'fish'                  # shell with syntax highlighting and tab completion.
+        'fisher'                # package manager for the fish shell.
+        'tldr'                  # simplified man pages.
 
-        'tldr'                  # collection of simplified and community-driven man pages.
-        'man-db'                # utility for reading man pages
+        'exa'                   # ls replacement.
+        'bat'                   # cat replacement.
 
-        'exa'                   # ls replacement
-        'bat'                   # cat clone with syntax highlighting and git integration
-
-# Personal Development Environment :
+# personal development environment :    
 
         'git'                   # distributed version control system
         'neovim'                # hyperextensible Vim-based text editor

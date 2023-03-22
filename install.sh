@@ -15,7 +15,7 @@ fi
 
 partition_disk () {
 
-# TODO - [ ] Add Swap option based on available RAM
+# [-] Add Swap option based on available RAM
 
 # delete existing partition table.
 wipefs -a -f /dev/nvme0n1

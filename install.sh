@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script installs my arch system.
+# This script installs a custom arch system.
 
 verify_uefi () {
 
@@ -15,12 +15,14 @@ fi
 
 partition_disk () {
 
-# [-] Add Swap option based on available RAM
+# [-] Add swap option based on available RAM.
+# [-] Write a wrapper for easy disk partitioning.
 
 # delete existing partition table.
 wipefs -a -f /dev/nvme0n1
 
 # create partitions :
+
 # 1. /dev/nvme0n1p1 for efi  partition taking +512M.
 # 2. /dev/nvme0n1p2 for root partition taking rest of the disk.
 
@@ -48,31 +50,32 @@ mount /dev/nvme0n1p2 /mnt
 
 }
 
-# UPDATE MIRROR LIST, THIS IS COPIED TO THE NEW SYSTEM
+install_packages () {
 
-sync_packages () {
-
-# update mirror list & refresh packages.
+# update mirrorlist. 
 reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-pacman -Syy
-
-}
-
-# INSTALL ESSENTIAL PACKAGES
-
-install () {
 
 apps=(
 
-# Base : 
+# Minimal package set to for a working arch system.
 
-    l   'linux'                 # The Linux kernel and modules
+    l   'linux'                 # linux kernel ~ 
         'linux-firmware'        # Firmware files for Linux
 
         'base'                  # Minimal package set to define a basic Arch Linux installation
         'base-devel'            # Basic tools to build Arch Linux packages
 
-# Terminal : 
+        'grub'                  # GNU GRand Unified Bootloader 
+        'efibootmgr'            # Linux user-space application to modify the EFI Boot Manager
+
+        'networkmanager'        # Network connection manager
+        'bluez'                 # Daemons for the bluetooth protocol stack
+        'bluez-utils'           # Development and debugging utils for the bluetooth protocol stack
+
+        'noto-fonts'            # Google Noto TTF fonts
+        'xdg-user-dirs'         # Manage user dirs like ~/Desktop, ~/Music, etc
+
+# Terminal : packages for a seamless shell experience.
 
         'fish'                  # smart and user-friendly command line shell
         'fisher'                # package manager for the fish shell
@@ -94,23 +97,14 @@ apps=(
         'nodejs'                # Evented I/O for V8 javascript
         'npm'                   # package manager for javascript
 
-# Appearance
+# Settings :
 
-        'noto-fonts'            # Google Noto TTF fonts
-        'font-manager'          # Font management for GTK+ DEs
-
-        'xdg-user-dirs'         # Manage user dirs like ~/Desktop, ~/Music, etc
-
-
-        'ufw'                   # CLI tool for managing a netfilter firewall
+        'font-manager'          # install fonts.
+        'blueman'               # connect to bluetooth devices.
 
 # Connectivity :
 
-        'networkmanager'        # Network connection manager
-
-        'blueman'               # GTK+ Bluetooth Manager
-        'bluez'                 # Daemons for the bluetooth protocol stack
-        'bluez-utils'           # Development and debugging utils for the bluetooth protocol stack
+        'ufw'                   # CLI tool for managing a netfilter firewall
 
 # Audio :
 
@@ -121,14 +115,10 @@ apps=(
 
 # Display Server :
 
-    # install display server :
-
     'xorg-server'               # xorg display server.
     'xorg-xinit'                # xinit ~ to start xorg server.
     'xorg-xclipboard'           # xclipboard ~ clipboard manager.
 
-    # install graphical utils :
-        
     'picom'                     # X compositor.
     'feh'                       # desktop wallpaper.
     'dunst'                     # notification daemon.
@@ -139,8 +129,6 @@ apps=(
     'papirus-icon-theme'        # icon themes.
     'pcmanfm-gtk3'              # file manager.
     'firefox'                   # browser.
-
-
 
 # Tools :
 
@@ -168,7 +156,6 @@ apps=(
 
 # Grub
 
-        grub efibootmgr
 		
 		
 	'firefox'             # primary browser.
@@ -217,13 +204,6 @@ apps=(
 	for app in "${apps[@]}"; do
         pacstrap -K /mnt "$app"
 	done
-
-
-
-
-
-
-
 
 # generate fstab file.
 genfstab -U /mnt >> /mnt/etc/fstab

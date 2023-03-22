@@ -15,8 +15,8 @@ fi
 
 partition_disk () {
 
-# [-] Add swap option based on available RAM.
-# [-] Write a wrapper for easy disk partitioning.
+# [-] add swap option based on available RAM.
+# [-] write a wrapper for easy disk partitioning.
 
 # delete existing partition table.
 wipefs -a -f /dev/nvme0n1
@@ -57,23 +57,22 @@ reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorli
 
 apps=(
 
-# Minimal package set to for a working arch system.
+# minimal package set for a working arch system.
 
-    l   'linux'                 # linux kernel ~ 
-        'linux-firmware'        # Firmware files for Linux
+    l   'linux'                 # linux kernel and modules.
+        'linux-firmware'        # firmware files for linux.
 
-        'base'                  # Minimal package set to define a basic Arch Linux installation
-        'base-devel'            # Basic tools to build Arch Linux packages
+        'base'                  # defines a basic arch installation.
+        'base-devel'            # tools to build arch linux packages.
 
-        'grub'                  # GNU GRand Unified Bootloader 
-        'efibootmgr'            # Linux user-space application to modify the EFI Boot Manager
+        'grub'                  # choses os kernel to boot.
+        'efibootmgr'            # manages the boot process.
 
-        'networkmanager'        # Network connection manager
-        'bluez'                 # Daemons for the bluetooth protocol stack
-        'bluez-utils'           # Development and debugging utils for the bluetooth protocol stack
+        'networkmanager'        # manages network connections.
+        'bluez'                 # manages bluetooth connections.
 
-        'noto-fonts'            # Google Noto TTF fonts
-        'xdg-user-dirs'         # Manage user dirs like ~/Desktop, ~/Music, etc
+        'noto-fonts'            # typeface to write/read any language.
+        'xdg-user-dirs'         # manages default directories for users.
 
 # Terminal : packages for a seamless shell experience.
 

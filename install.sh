@@ -1,9 +1,7 @@
 #!/bin/bash
-# This script installs the base arch system.
+# This script installs my arch system.
 
-# VERIFY BOOT MODE
-
-check_uefi () {
+verify_uefi () {
 
 # check if system is booted in UEFI mode.
 if [ ! -d "/sys/firmware/efi/efivars" ]
@@ -15,18 +13,9 @@ fi
 
 }
 
-# CONNECT TO INTERNET
+partition_disk () {
 
-# Use iwctl to connect to a wifi, incase you're not on a wired connection.
-# `iwctl --passphrase passphrase station device connect SSID`
-# ex : iwctl --passphrase D@mnITTrudy station wlan0 connect ThePineappleIncident
-# check internet connectio using 'ping google.com', response means internis working.
-
-# PARTITION THE DISKS
-# to identify the disks, use `lsblk`
-# - [ ] Add Swap option based on RAM
-
-prepare_disk () {
+# TODO - [ ] Add Swap option based on available RAM
 
 # delete existing partition table.
 wipefs -a -f /dev/nvme0n1
@@ -75,7 +64,7 @@ install () {
 
 apps=(
 
-# Base System :
+# Base : 
 
     l   'linux'                 # The Linux kernel and modules
         'linux-firmware'        # Firmware files for Linux
@@ -83,7 +72,7 @@ apps=(
         'base'                  # Minimal package set to define a basic Arch Linux installation
         'base-devel'            # Basic tools to build Arch Linux packages
 
-# Terminal :
+# Terminal : 
 
         'fish'                  # smart and user-friendly command line shell
         'fisher'                # package manager for the fish shell
@@ -96,8 +85,8 @@ apps=(
 
 # Personal Development Environment :
 
-        'neovim'                # hyperextensible Vim-based text editor
         'git'                   # distributed version control system
+        'neovim'                # hyperextensible Vim-based text editor
 
         'fd'                    # fast and user-friendly alternative to find
         'ripgrep'               # search tool that combines the usability of ag with the raw speed of grep
@@ -105,17 +94,17 @@ apps=(
         'nodejs'                # Evented I/O for V8 javascript
         'npm'                   # package manager for javascript
 
-# Essentials :
+# Appearance
 
         'noto-fonts'            # Google Noto TTF fonts
+        'font-manager'          # Font management for GTK+ DEs
+
         'xdg-user-dirs'         # Manage user dirs like ~/Desktop, ~/Music, etc
 
-# Settings :
 
-        'font-manager'          # Font management for GTK+ DEs
         'ufw'                   # CLI tool for managing a netfilter firewall
 
-# Hardware :
+# Connectivity :
 
         'networkmanager'        # Network connection manager
 
@@ -123,25 +112,41 @@ apps=(
         'bluez'                 # Daemons for the bluetooth protocol stack
         'bluez-utils'           # Development and debugging utils for the bluetooth protocol stack
 
+# Audio :
+
         'pulseaudio'            # A featureful, general-purpose sound server
         'pulseaudio-alsa'       # ALSA Configuration for PulseAudio
         'pulseaudio-bluetooth'  # Bluetooth support for PulseAudio
         'pavucontrol'           # PulseAudio Volume Control
 
-        'xorg-server'           # xorg display server.
-        'xorg-init'             # xorg initialisation program
-        'xorg-xclipboard'       # x clipboard manager
+# Display Server :
 
+    # install display server :
 
+    'xorg-server'               # xorg display server.
+    'xorg-xinit'                # xinit ~ to start xorg server.
+    'xorg-xclipboard'           # xclipboard ~ clipboard manager.
+
+    # install graphical utils :
         
+    'picom'                     # X compositor.
+    'feh'                       # desktop wallpaper.
+    'dunst'                     # notification daemon.
+    'dmenu'                     # app menu.
+    'lxappearance'              # theme switcher.
+    'lxinput-gtk3'              # configure keyboard & mouse.
+    'gnome-themes-extra'        # window themes.
+    'papirus-icon-theme'        # icon themes.
+    'pcmanfm-gtk3'              # file manager.
+    'firefox'                   # browser.
+
+
+
 # Tools :
 
         'btop'                  # monitor of system resources
         'gdu'                   # Fast disk usage analyzer
         'bandwhich'             # bandwidth utilization tool
-
-# Settings :
-
 
 # Apps :
 
@@ -149,9 +154,59 @@ apps=(
         'calc'                  # Arbitrary precision console calculator
 		
 		
+		'gnome-screenshot' # screenshot tool.
+		'gcolor3'          # color picker.
+
+		'nautilus'      # file manager.
+		'unzip'         # extract/view .zip archives.
+		'mtpfs'         # read/write to MTP devices.
+		'libmtp'        # MTP support.
+		'gvfs'          # gnome virtual file system for mounting.
+		'gvfs-mtp'      # gnome virtual file system for MTP devices.
+		'android-tools' # android platform tools.
+		'android-udev'  # udev rules to connect to android.
+
+# Grub
+
+        grub efibootmgr
 		
 		
-		
+	'firefox'             # primary browser.
+		'chromium'            # secondary browser.
+		'torbrowser-launcher' # tertiary browser.
+
+		# tag [3] : docs
+
+		'gedit'     # text editor.
+		'evince'    # doc viewer.
+		'ristretto' # image viewer.
+
+		# tag [4] : canvas
+
+		'gimp'     # image editor.
+		'inkscape' # vector art.
+		'mypaint'  # raster art.
+
+		'peek'       # GIF recorder.
+		'obs-studio' # screen cast/record.
+		'audacity'   # audio editor.
+		'pitivi'     # video editor.
+
+		# tag [5] : utils
+
+		'torrential'         # torrent client.
+		'gnome-multi-writer' # iso file writer.
+		'gnome-disk-utility' # disk management.
+		'font-manager'       # font manager.
+		'seahorse'           # encryption keys.
+		'lxinput-gtk3'       # configure keyboard & mouse.
+		'piper'				 # logitech G suite.
+
+		# tag [6] : content
+
+		'vlc'            # media player.
+		'gnome-podcasts' # podcasts app.
+
 
 		
 

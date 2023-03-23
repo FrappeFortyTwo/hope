@@ -194,10 +194,187 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 setup () {
 
-# download setup script from repo into /mnt.
-curl https://gitlab.com/workflow-setup/arch/-/raw/main/setup.sh -o /mnt/setup.sh
+# write script to /mnt
+cat > /mnt/setup.sh <<- EOM
+#!/bin/bash
+# This script sets up the installed arch system.
 
-# run the setup script from /mnt with arch-chroot.
+multilib() {
+        echo "" >> /etc/pacman.conf
+        echo "[multilib]" >> /etc/pacman.conf
+        echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+}
+
+date-time () {
+        ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+        timedatectl set-ntp true
+        hwclock --systohc
+}
+    
+locale () {
+        sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+        locale-gen
+        localectl set-locale LANG=en_US.UTF-8
+}
+                        
+users () {
+        # set the root password.
+        echo "Specify root password. This will be used to authorize root commands."
+        passwd
+
+        # add regular user.
+        echo "Specify username. This will be used to identify your account on this machine."
+        read -r userName;
+        useradd -m -G wheel -s /bin/bash "$userName"
+
+        # set password for new user.
+        echo "Specify password for regular user : $userName."
+        passwd "$userName"
+
+        # enable sudo for wheel group.
+        sed -i 's/# %wheel ALL=(ALL:ALL) ALL/ %wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+
+        # create directories for user.
+        xdg-user-dirs-update
+}
+
+network () {
+        systemctl enable NetworkManager
+        systemctl enable ufw
+
+        # create the hostname file.
+        echo "Specify hostname. This will be used to identify your machine on a network."
+        read -r hostName; echo "$hostName" > /etc/hostname
+
+        # add matching entries to '/etc/hosts'.
+        # ( if the system has a permanent IP address, it should be used instead of 127.0.1.1 )
+        echo -e 127.0.0.1'\t'localhost'\n'::1'\t\t'localhost'\n'127.0.1.1'\t'$hostName >> /etc/hosts
+
+        ufw default allow outgoing
+        ufw default deny incoming
+}
+
+bluetooth () {
+        lsmod | grep btusb
+        rfkill unblock bluetooth
+        systemctl enable bluetooth.service
+}
+
+# clone suckless fork. (this command also creates .config dir as root)
+git clone https://gitlab.com/workflow-setup/suckless.git  /home/"$userName"/.config/suckless
+
+# install suckless terminal
+cd /home/"$userName"/.config/suckless/st
+make clean install; cd "$current_dir"
+
+# set theme for fish shell.
+fish -c "fisher install jomik/fish-gruvbox"    
+
+# set defaults.
+chsh --shell /bin/fish "$userName"
+echo "export VISUAL=nvim" | tee -a /etc/profile
+echo "export EDITOR=$VISUAL" | tee -a /etc/profile
+echo "export TERMINAL=st" | tee -a /etc/profile
+
+# install dynamic window manager.
+cd /home/"$userName"/.config/suckless/dwm
+make clean install; cd "$current_dir"
+
+}
+
+grub () {
+
+# install required packages.
+pacman -S grub efibootmgr --noconfirm
+
+# create directory to mount EFI partition.
+mkdir /boot/efi
+
+# mount the EFI partition.
+mount /dev/nvme0n1p1 /boot/efi
+
+# install grub.
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+
+# enable logs.
+sed -i 's/loglevel=3 quiet/loglevel=3/' /etc/default/grub
+
+# generate grub config.
+grub-mkconfig -o /boot/grub/grub.cfg
+
+}
+
+config () {
+
+    # download dot files into their desired paths.
+    repo="https://gitlab.com/workflow-setup/arch/-/raw/main"
+
+    # 'xinitrc'
+    curl "$repo"/.config/.xinitrc -o  /home/"$userName"/.xinitrc
+    
+    # 'picom'
+    mkdir -p /home/"$userName"/.config/picom
+    curl "$repo"/.config/picom/picom.conf -o /home/"$userName"/.config/picom/picom.conf 
+
+    # 'fish'
+    mkdir -p /home/"$userName"/.config/fish/functions
+    curl "$repo"/.config/fish/config.fish -o /home/"$userName"/.config/fish/config.fish 
+    curl "$repo"/.config/fish/functions/fish_greeting.fish -o /home/"$userName"/.config/fish/functions/fish_greeting.fish 
+
+    # wallpaper for 'feh'
+    mkdir -p /home/"$userName"/Pictures
+    curl "$repo"/assets/wallpaper.jpg -o /home/"$userName"/Pictures/wallpaper.jpg 
+
+    # reset permissions.
+    chown -R  "$userName" /home/"$userName"/.config
+    chown -R :"$userName" /home/"$userName"/.config
+    
+    chown -R  "$userName" /home/"$userName"/Pictures
+    chown -R :"$userName" /home/"$userName"/Pictures
+
+}
+
+misc() {
+
+# enable TRIM for SSDs.
+systemctl enable fstrim.timer
+
+# bug fix ~ reinstall pambase.
+pacman -S pambase --noconfirm
+
+}
+
+# Mark pwd
+current_dir=$PWD
+
+# Setup ...
+
+multilib
+
+timezone
+locale
+users
+
+network
+bluetooth
+audio
+chipset
+
+tui
+gui
+grub
+
+config
+misc
+
+# Clean dir & exit.
+
+rm setup.sh
+exit
+
+EOM
+
+# run script from /mnt with arch-chroot.
 arch-chroot /mnt bash setup.sh
 
 }

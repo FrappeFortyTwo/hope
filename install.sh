@@ -260,87 +260,60 @@ bluetooth () {
         systemctl enable bluetooth.service
 }
 
-# clone suckless fork. (this command also creates .config dir as root)
-git clone https://gitlab.com/workflow-setup/suckless.git  /home/"$userName"/.config/suckless
+suckless () {
 
-# install suckless terminal
-cd /home/"$userName"/.config/suckless/st
-make clean install; cd "$current_dir"
+        # clone suckless fork. (this command also creates .config dir as root)
+        git clone https://gitlab.com/workflow-setup/suckless.git  /home/"$userName"/.config/suckless
 
-# set theme for fish shell.
-fish -c "fisher install jomik/fish-gruvbox"    
+        # install suckless terminal
+        cd /home/"$userName"/.config/suckless/st
+        make clean install; cd "$current_dir"
 
-# set defaults.
-chsh --shell /bin/fish "$userName"
-echo "export VISUAL=nvim" | tee -a /etc/profile
-echo "export EDITOR=$VISUAL" | tee -a /etc/profile
-echo "export TERMINAL=st" | tee -a /etc/profile
+        # install dynamic window manager.
+        cd /home/"$userName"/.config/suckless/dwm
+        make clean install; cd "$current_dir"
 
-# install dynamic window manager.
-cd /home/"$userName"/.config/suckless/dwm
-make clean install; cd "$current_dir"
+}
+
+shell () {
+
+        # set theme for fish shell.
+        fish -c "fisher install jomik/fish-gruvbox"    
+
+        # set defaults.
+        chsh --shell /bin/fish "$userName"
+        echo "export VISUAL=nvim" | tee -a /etc/profile
+        echo "export EDITOR=$VISUAL" | tee -a /etc/profile
+        echo "export TERMINAL=st" | tee -a /etc/profile
 
 }
 
 grub () {
 
-# install required packages.
-pacman -S grub efibootmgr --noconfirm
+        # create directory to mount EFI partition.
+        mkdir /boot/efi
 
-# create directory to mount EFI partition.
-mkdir /boot/efi
+        # mount the EFI partition.
+        mount /dev/nvme0n1p1 /boot/efi
 
-# mount the EFI partition.
-mount /dev/nvme0n1p1 /boot/efi
+        # install grub.
+        grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
 
-# install grub.
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+        # enable logs.
+        sed -i 's/loglevel=3 quiet/loglevel=3/' /etc/default/grub
 
-# enable logs.
-sed -i 's/loglevel=3 quiet/loglevel=3/' /etc/default/grub
-
-# generate grub config.
-grub-mkconfig -o /boot/grub/grub.cfg
-
-}
-
-config () {
-
-    # download dot files into their desired paths.
-    repo="https://gitlab.com/workflow-setup/arch/-/raw/main"
-
-    # 'xinitrc'
-    curl "$repo"/.config/.xinitrc -o  /home/"$userName"/.xinitrc
-    
-    # 'picom'
-    mkdir -p /home/"$userName"/.config/picom
-    curl "$repo"/.config/picom/picom.conf -o /home/"$userName"/.config/picom/picom.conf 
-
-    # 'fish'
-    mkdir -p /home/"$userName"/.config/fish/functions
-    curl "$repo"/.config/fish/config.fish -o /home/"$userName"/.config/fish/config.fish 
-    curl "$repo"/.config/fish/functions/fish_greeting.fish -o /home/"$userName"/.config/fish/functions/fish_greeting.fish 
-
-    # wallpaper for 'feh'
-    mkdir -p /home/"$userName"/Pictures
-    curl "$repo"/assets/wallpaper.jpg -o /home/"$userName"/Pictures/wallpaper.jpg 
-
-    # reset permissions.
-    chown -R  "$userName" /home/"$userName"/.config
-    chown -R :"$userName" /home/"$userName"/.config
-    
-    chown -R  "$userName" /home/"$userName"/Pictures
-    chown -R :"$userName" /home/"$userName"/Pictures
+        # generate grub config.
+        grub-mkconfig -o /boot/grub/grub.cfg
 
 }
 
 misc() {
 
-# enable TRIM for SSDs.
-systemctl enable fstrim.timer
+        # enable TRIM for SSDs.
+        systemctl enable fstrim.timer
 
-# bug fix ~ reinstall pambase.
-pacman -S pambase --noconfirm
+        # bug fix ~ reinstall pambase.
+        pacman -S pambase --noconfirm
 
 }
 
@@ -350,21 +323,14 @@ current_dir=$PWD
 # Setup ...
 
 multilib
-
-timezone
+date-time
 locale
 users
-
 network
 bluetooth
-audio
-chipset
-
-tui
-gui
+suckless
+shell
 grub
-
-config
 misc
 
 # Clean dir & exit.
@@ -381,13 +347,10 @@ arch-chroot /mnt bash setup.sh
 
 # Install arch linux :
 
-check_uefi      # verify boot mode.
-sync_packages   # update mirror list.
-prepare_disk    # partion & format disk.
-install         # install vanilla arch.
-setup           # setup system.
+verify_uefi      # verify boot mode.
+partition_disk   # update mirror list.
+install_packages # partion & format disk.
+setup            # install vanilla arch.
 
 # unmount paritions & reboot.
-
 umount -R /mnt
-

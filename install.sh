@@ -59,142 +59,127 @@ apps=(
 
 # minimal package set for a working arch system.
 
-    l   'linux'                 # linux kernel and modules.
-        'linux-firmware'        # firmware files for linux.
+        # base :
 
-        'base'                  # defines a basic arch installation.
-        'base-devel'            # tools to build arch linux packages.
+        l       'linux'                 # linux kernel and modules.
+                'linux-firmware'        # firmware files for linux.
 
-        'grub'                  # choses os kernel to boot.
-        'efibootmgr'            # manages the boot process.
+                'base'                  # defines a basic arch installation.
+                'base-devel'            # tools to build arch linux packages.
 
-        'networkmanager'        # manages network connections.
-        'bluez'                 # manages bluetooth connections.
+                'grub'                  # choses os kernel to boot.
+                'efibootmgr'            # manages the boot process.
 
-        'noto-fonts'            # typeface to write/read any language.
-        'xdg-user-dirs'         # manages default directories for users.
+                'noto-fonts'            # typeface to write/read any language.
+                'xdg-user-dirs'         # manages default directories for users.
+                'seahorse'              # encryption keys.
 
-# packages for a seamless shell exprience.
 
-        'fish'                  # shell with syntax highlighting and tab completion.
-        'fisher'                # package manager for the fish shell.
-        'tldr'                  # simplified man pages.
+        # connectivity :
 
-        'exa'                   # ls replacement.
-        'bat'                   # cat replacement.
+                'networkmanager'        # manages network connections.
+                'bluez'                 # manages bluetooth connections.
 
-# personal development environment :    
+        # audio :
 
-        'git'                   # distributed version control system
-        'neovim'                # hyperextensible Vim-based text editor
+                'pulseaudio'            # A featureful, general-purpose sound server.
+                'pulseaudio-alsa'       # ALSA Configuration for PulseAudio.
+                'pulseaudio-bluetooth'  # Bluetooth support for PulseAudio.
 
-        'fd'                    # fast and user-friendly alternative to find
-        'ripgrep'               # search tool that combines the usability of ag with the raw speed of grep
+        # display :
 
-        'nodejs'                # Evented I/O for V8 javascript
-        'npm'                   # package manager for javascript
+                'xorg-server'           # xorg display server.
+                'xorg-xinit'            # xinit ~ to start xorg server.
+                'xorg-xclipboard'       # xclipboard ~ clipboard manager.
 
-# Settings :
+                'picom'                 # X compositor.
+                'dunst'                 # notification daemon.
 
-        'font-manager'          # install fonts.
-        'blueman'               # connect to bluetooth devices.
+        # theme :
 
-# Connectivity :
+                'feh'                   # desktop wallpaper.
+                'gnome-themes-extra'    # window themes.
+                'papirus-icon-theme'    # icon themes.
+        
+        # shell :
 
-        'ufw'                   # CLI tool for managing a netfilter firewall
+                'fish'                  # shell with syntax highlighting and tab completion.
+                'fisher'                # package manager for the fish shell.
+                'tldr'                  # simplified man pages.
 
-# Audio :
+                'exa'                   # ls replacement.
+                'bat'                   # cat replacement.
 
-        'pulseaudio'            # A featureful, general-purpose sound server
-        'pulseaudio-alsa'       # ALSA Configuration for PulseAudio
-        'pulseaudio-bluetooth'  # Bluetooth support for PulseAudio
-        'pavucontrol'           # PulseAudio Volume Control
+        # editor :
 
-# Display Server :
+                'git'                   # distributed version control system
+                'neovim'                # hyperextensible Vim-based text editor
 
-    'xorg-server'               # xorg display server.
-    'xorg-xinit'                # xinit ~ to start xorg server.
-    'xorg-xclipboard'           # xclipboard ~ clipboard manager.
+                'fd'                    # fast and user-friendly alternative to find
+                'ripgrep'               # search tool that combines the usability of ag with the raw speed of grep
 
-    'picom'                     # X compositor.
-    'feh'                       # desktop wallpaper.
-    'dunst'                     # notification daemon.
-    'dmenu'                     # app menu.
-    'lxappearance'              # theme switcher.
-    'lxinput-gtk3'              # configure keyboard & mouse.
-    'gnome-themes-extra'        # window themes.
-    'papirus-icon-theme'        # icon themes.
-    'pcmanfm-gtk3'              # file manager.
-    'firefox'                   # browser.
+                'nodejs'                # Evented I/O for V8 javascript
+                'npm'                   # package manager for javascript
 
-# Tools :
+# Below apps have specified tags/workspace assigned only where, they can spawn :
+
+# tag [0] ~ floating/current tag
+
+        'gnome-screenshot'      # screenshot tool.
+	'gcolor3'               # color picker.
+
+	'nautilus'              # file manager.
+	'unzip'                 # extract/view .zip archives.
+	'mtpfs'                 # read/write to MTP devices.
+	'libmtp'                # MTP support.
+	'gvfs'                  # gnome virtual file system for mounting.
+	'gvfs-mtp'              # gnome virtual file system for MTP devices.
+	'android-tools'         # android platform tools.
+	'android-udev'          # udev rules to connect to android.
+
+# tag [1] ~ terminal
 
         'btop'                  # monitor of system resources
         'gdu'                   # Fast disk usage analyzer
         'bandwhich'             # bandwidth utilization tool
-
-# Apps :
-
-        'cmus'                  # Feature-rich ncurses-based music player
         'calc'                  # Arbitrary precision console calculator
-		
-		
-		'gnome-screenshot' # screenshot tool.
-		'gcolor3'          # color picker.
+        'cmus'                  # Feature-rich ncurses-based music player
+        'ufw'                   # CLI tool for managing a netfilter firewall.
 
-		'nautilus'      # file manager.
-		'unzip'         # extract/view .zip archives.
-		'mtpfs'         # read/write to MTP devices.
-		'libmtp'        # MTP support.
-		'gvfs'          # gnome virtual file system for mounting.
-		'gvfs-mtp'      # gnome virtual file system for MTP devices.
-		'android-tools' # android platform tools.
-		'android-udev'  # udev rules to connect to android.
+# tag [2] ~ browser
 
-# Grub
+	'firefox'               # primary browser.
+	'chromium'              # secondary browser.
+	'torbrowser-launcher'   # tertiary browser.
 
-		
-		
-	'firefox'             # primary browser.
-		'chromium'            # secondary browser.
-		'torbrowser-launcher' # tertiary browser.
+# tag [3] ~ Docs
 
-		# tag [3] : docs
+	'gedit'                 # text editor.
+	'evince'                # doc viewer.
+	'ristretto'             # image viewer.
 
-		'gedit'     # text editor.
-		'evince'    # doc viewer.
-		'ristretto' # image viewer.
+# tag [4] ~ canvas
 
-		# tag [4] : canvas
+	'gimp'                  # image editor.
+	'inkscape'              # vector art.
+	'mypaint'               # raster art.
 
-		'gimp'     # image editor.
-		'inkscape' # vector art.
-		'mypaint'  # raster art.
+# tag [5] ~ utils
 
-		'peek'       # GIF recorder.
-		'obs-studio' # screen cast/record.
-		'audacity'   # audio editor.
-		'pitivi'     # video editor.
+        'pavucontrol'           # control device volume.
+        'blueman'               # connect to bluetooth devices.
+        'font-manager'          # install fonts.
+        'lxappearance'          # theme switcher.
+        'lxinput-gtk3'          # configure keyboard & mouse.
 
-		# tag [5] : utils
+	'torrential'            # torrent client.
+	'gnome-multi-writer'    # iso file writer.
+	'gnome-disk-utility'    # disk management.
 
-		'torrential'         # torrent client.
-		'gnome-multi-writer' # iso file writer.
-		'gnome-disk-utility' # disk management.
-		'font-manager'       # font manager.
-		'seahorse'           # encryption keys.
-		'lxinput-gtk3'       # configure keyboard & mouse.
-		'piper'				 # logitech G suite.
+# tag [6] ~ content
 
-		# tag [6] : content
-
-		'vlc'            # media player.
-		'gnome-podcasts' # podcasts app.
-
-
-		
-
-		
+	'vlc'                   # media player.
+	'gnome-podcasts'        # podcasts app.
 
 	)
 

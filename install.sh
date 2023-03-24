@@ -70,6 +70,8 @@ apps=(
                 'grub'                  # choses os kernel to boot.
                 'efibootmgr'            # manages the boot process.
 
+                'tlp'                   # Linux Advanced Power Management
+                
                 'noto-fonts'            # typeface to write/read any language.
                 'xdg-user-dirs'         # manages default directories for users.
                 'seahorse'              # encryption keys.
@@ -140,6 +142,8 @@ apps=(
 # tag [1] ~ terminal
 
         'btop'                  # monitor of system resources
+        'powertop'              # diagnose issues with power consumption
+
         'calc'                  # Arbitrary precision console calculator
         'cmus'                  # Feature-rich ncurses-based music player
 

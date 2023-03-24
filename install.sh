@@ -288,7 +288,7 @@ shell () {
 suckless () {
 
         # clone suckless fork. (this command also creates .config dir as root)
-        git clone https://gitlab.com/workflow-setup/suckless.git  /home/"$userName"/.config/suckless
+        git clone https://github.com/frappeforty/suckless.git /home/"$userName"/.config/suckless
 
         # install suckless terminal
         cd /home/"$userName"/.config/suckless/st

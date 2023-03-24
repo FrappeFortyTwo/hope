@@ -74,11 +74,11 @@ apps=(
                 'xdg-user-dirs'         # manages default directories for users.
                 'seahorse'              # encryption keys.
 
-
         # connectivity :
 
-                'networkmanager'        # manages network connections.
                 'bluez'                 # manages bluetooth connections.
+                'networkmanager'        # manages network connections.
+                'ufw'                   # uncomplicated firewall.
 
         # audio :
 
@@ -121,7 +121,7 @@ apps=(
                 'nodejs'                # Evented I/O for V8 javascript
                 'npm'                   # package manager for javascript
 
-# Below apps have specified tags/workspace assigned only where, they can spawn :
+# Below apps have specified tags/workspace assigned, only where they can spawn :
 
 # tag [0] ~ floating/current tag
 
@@ -140,11 +140,11 @@ apps=(
 # tag [1] ~ terminal
 
         'btop'                  # monitor of system resources
-        'gdu'                   # Fast disk usage analyzer
-        'bandwhich'             # bandwidth utilization tool
         'calc'                  # Arbitrary precision console calculator
         'cmus'                  # Feature-rich ncurses-based music player
-        'ufw'                   # CLI tool for managing a netfilter firewall.
+
+        'gdu'                   # Fast disk usage analyzer
+        'bandwhich'             # bandwidth utilization tool
 
 # tag [2] ~ browser
 
@@ -200,24 +200,31 @@ cat > /mnt/setup.sh <<- EOM
 # This script sets up the installed arch system.
 
 multilib() {
+
         echo "" >> /etc/pacman.conf
         echo "[multilib]" >> /etc/pacman.conf
         echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+
 }
 
 date-time () {
+
         ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
         timedatectl set-ntp true
         hwclock --systohc
+
 }
     
 locale () {
+
         sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
         locale-gen
         localectl set-locale LANG=en_US.UTF-8
+
 }
                         
 users () {
+
         # set the root password.
         echo "Specify root password. This will be used to authorize root commands."
         passwd
@@ -236,9 +243,11 @@ users () {
 
         # create directories for user.
         xdg-user-dirs-update
+
 }
 
 network () {
+
         systemctl enable NetworkManager
         systemctl enable ufw
 
@@ -252,12 +261,28 @@ network () {
 
         ufw default allow outgoing
         ufw default deny incoming
+
 }
 
 bluetooth () {
+
         lsmod | grep btusb
         rfkill unblock bluetooth
         systemctl enable bluetooth.service
+
+}
+
+shell () {
+
+        # set theme for fish shell.
+        fish -c "fisher install vitallium/tokyonight-fish"    
+
+        # set defaults.
+        chsh --shell /bin/fish "$userName"
+        echo "export VISUAL=nvim" | tee -a /etc/profile
+        echo "export EDITOR=$VISUAL" | tee -a /etc/profile
+        echo "export TERMINAL=st" | tee -a /etc/profile
+        
 }
 
 suckless () {
@@ -275,16 +300,19 @@ suckless () {
 
 }
 
-shell () {
+microcode () {
 
-        # set theme for fish shell.
-        fish -c "fisher install jomik/fish-gruvbox"    
+vendor="$(lscpu | grep 'Model name')"
 
-        # set defaults.
-        chsh --shell /bin/fish "$userName"
-        echo "export VISUAL=nvim" | tee -a /etc/profile
-        echo "export EDITOR=$VISUAL" | tee -a /etc/profile
-        echo "export TERMINAL=st" | tee -a /etc/profile
+if [[ "$vendor" == *"Intel"* ]]; then
+  echo "Intel CPU Found !"
+  pacman -S intel-ucode --noconfirm
+fi
+
+if [[ "$vendor" == *"AMD"* ]]; then
+  echo "AMD CPU Found !"
+  pacman -S amd-ucode --noconfirm
+fi
 
 }
 
@@ -317,10 +345,9 @@ misc() {
 
 }
 
-# Mark pwd
 current_dir=$PWD
 
-# Setup ...
+# setup ...
 
 multilib
 date-time
@@ -328,16 +355,15 @@ locale
 users
 network
 bluetooth
-suckless
 shell
+suckless
 grub
 misc
 
-# Clean dir & exit.
+# clean-up & exit.
 
 rm setup.sh
 exit
-
 EOM
 
 # run script from /mnt with arch-chroot.
